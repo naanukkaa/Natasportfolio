@@ -24,6 +24,7 @@
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: center;
+    
     gap: 22px;
     padding: 22px 26px;
     background: #fff;
@@ -45,7 +46,7 @@
 /* Document number */
 
 .doc-n {
-    font: 400 2.2rem/1 "Dachithelynx", sans-serif;
+    font: 400 2.2rem "Dachithelynx", sans-serif;
     font-size: 40px;
     color: transparent;
     background: linear-gradient(135deg, var(--dc1), var(--dc2));

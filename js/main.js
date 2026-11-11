@@ -5,6 +5,7 @@
 
 const T = {
     ka: {
+        maintitle: "ნატალია გელიტაშვილი",
         home: "მთავარი",
         stem: "STEM კლუბი",
         rob: "რობოტიკის კლუბი",
@@ -16,6 +17,12 @@ const T = {
         h1b: "ტექნოლოგიები",
         h1c: "და ინოვაცია",
 
+        page1: "განათლება / ტექნოლოგია / ინოვაცია",
+
+        section1: "01 / გამოცდილება",
+        section2: "02 / სწავლა და აღმოჩენა",
+        section3: "03 / სიახლეები",
+
         sub: "ნატალია გელიტაშვილი — ტექნოლოგიების მასწავლებელი, STEM და რობოტიკის კლუბების ხელმძღვანელი.",
 
         b1: "ჩემი საქმიანობა",
@@ -23,14 +30,14 @@ const T = {
         photo: "აქ განთავსდება ნატალიას ფოტო (STEM მაისურით)",
 
         s1: "წლიანი სწავლების გამოცდილება",
-        s2: "წელი ტექნოლოგიების სწავლებაში",
-        s3: "მათემატიკის მასწავლებლის გამოცდილება",
+        s2: "წლიანი გამოცდილება ტექნოლოგიების სწავლებაში",
+        s3: "წლიანი გამოცდილება მათემატიკის სწავლებაში",
         s4: "კლუბი: STEM და რობოტიკა",
 
         intro: "მასწავლებელი, რომელიც ტექნოლოგიებს პრაქტიკაში აქცევს",
 
-        g79: "7–9 კლასები",
-        g46: "4–6 კლასები",
+        g79: "VII-IX კლასები",
+        g46: "IV-V-VI კლასები",
 
         latest: "ბოლო სიახლეები",
         empty: "სიახლეები ჯერ არ არის გამოქვეყნებული.",
@@ -46,10 +53,15 @@ const T = {
 
         sent: "შეტყობინება წარმატებით გაიგზავნა.",
         error: "შეცდომა. გთხოვთ, სცადოთ თავიდან.",
-        notConfigured: "სერვისი ჯერ არ არის გამართული."
+        notConfigured: "სერვისი ჯერ არ არის გამართული.",
+
+        stemdesc: "ქიმია · ტექნოლოგია · ინჟინერია · მათემატიკა",
+        robotdesc: "დიზაინი · ინჟინერია · რობოტიკა",
+        view: "გაიცანით კლუბი ↗"
     },
 
     en: {
+        maintitle: "NATALIA GELITASHVILI",
         home: "Home",
         stem: "STEM Club",
         rob: "Robotics Club",
@@ -60,6 +72,12 @@ const T = {
         h1a: "Education,",
         h1b: "Technology",
         h1c: "& Innovation",
+        
+        page1: "EDUCATION / TECHNOLOGY / INNOVATION",
+        
+        section1: "01 / EXPERIENCE",
+        section2: "02 / LEARNING & DISCOVERY",
+        section3: "03 / UPDATES",
 
         sub: "Natalia Gelitashvili — Technology Teacher, STEM and Robotics Club Mentor.",
 
@@ -74,8 +92,8 @@ const T = {
 
         intro: "A teacher who turns technology into hands-on practice",
 
-        g79: "Grades 7–9",
-        g46: "Grades 4–6",
+        g79: "Grades VII-IX",
+        g46: "Grades IV-V-VI",
 
         latest: "Latest news",
         empty: "No news published yet.",
@@ -91,7 +109,11 @@ const T = {
 
         sent: "Your message was sent successfully.",
         error: "An error occurred. Please try again.",
-        notConfigured: "The service is not configured yet."
+        notConfigured: "The service is not configured yet.",
+
+        stemdesc: "SCIENCE · TECHNOLOGY · ENGINEERING · MATHEMATICS",
+        robotdesc: "DESIGN · ENGINEERING · ROBOTICS",
+        view: "Explore club ↗"
     }
 };
 

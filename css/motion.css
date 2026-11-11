@@ -43,7 +43,7 @@ html.js .reveal.in h2{clip-path:inset(-.2em -.2em)}
 /* stats */
 .stat{border-left:1px solid var(--line);padding-left:20px}
 html.js .reveal .stat{opacity:0;transform:translateY(30px);transition:.8s}
-html.js .reveal.in .stat{opacity:1;transform:none}
+html.js .reveal.in .stat{opacity:1;transform:none; padding-left: 20px;}
 .stat:nth-child(2){transition-delay:.12s!important}.stat:nth-child(3){transition-delay:.24s!important}.stat:nth-child(4){transition-delay:.36s!important}
 
 /* buttons */

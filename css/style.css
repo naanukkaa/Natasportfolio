@@ -112,6 +112,7 @@ header.solid {
     letter-spacing: .02em;
     position: relative;
     z-index: 60;
+    margin-top: 8px;
 }
 
 .logo span {
@@ -297,6 +298,7 @@ h2 {
     grid-template-columns: repeat(4, 1fr);
     border-top: 1px solid var(--line);
     margin-top: 50px;
+    padding-left: 10px;
 }
 
 .stats div {
