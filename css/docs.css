@@ -1,0 +1,110 @@
+/* Permanent club documents (hard-coded in HTML, not editable from admin) */
+
+.docs {
+    display: grid;
+    gap: 14px;
+    max-width: 860px;
+    margin-top: 24px;
+    list-style: none;
+}
+
+.docs.stem {
+    --dc1: var(--so);
+    --dc2: var(--sb);
+}
+
+.docs.rob {
+    --dc1: var(--rp);
+    --dc2: var(--rb);
+}
+
+/* Document card */
+
+.doc {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 22px;
+    padding: 22px 26px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-left: 6px solid var(--dc1);
+    transition:
+        transform 0.35s cubic-bezier(.2, .8, .2, 1),
+        border-color 0.3s,
+        box-shadow 0.3s;
+}
+
+.doc:hover {
+    transform: translateX(8px);
+    border-color: var(--dc2);
+    border-left-color: var(--dc1);
+    box-shadow: 0 10px 30px rgba(16, 29, 50, .08);
+}
+
+/* Document number */
+
+.doc-n {
+    font: 400 2.2rem/1 "Dachithelynx", sans-serif;
+    font-size: 40px;
+    color: transparent;
+    background: linear-gradient(135deg, var(--dc1), var(--dc2));
+    background-clip: text;
+    -webkit-background-clip: text;
+}
+
+/* Document title and description */
+
+.doc-t b {
+    display: block;
+    font: 400 1.25rem/1.35 "Dachithelynx", sans-serif;
+}
+
+.doc-t small {
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: .14em;
+}
+
+/* Document action buttons */
+
+.doc-a {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.doc-a a {
+    padding: 10px 20px;
+    border: 1px solid var(--navy);
+    font-size: 15px;
+    transition: .25s;
+}
+
+.doc-a a:first-child {
+    color: #fff;
+    background: var(--navy);
+}
+
+.doc-a a:hover {
+    color: #fff;
+    background: var(--dc1);
+    border-color: var(--dc1);
+}
+
+/* Responsive */
+
+@media (max-width: 700px) {
+    .doc {
+        grid-template-columns: auto 1fr;
+        padding: 18px;
+    }
+
+    .doc-a {
+        grid-column: 1 / -1;
+    }
+
+    .doc:hover {
+        transform: none;
+    }
+}

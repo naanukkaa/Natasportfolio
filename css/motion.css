@@ -1,1246 +1,173 @@
-
-/* =========================================================
-   MOTION LAYER
-   Loaded after style.css.
-   Remove the link to turn everything off.
-========================================================= */
-
-
-/* =========================================================
-   1. PAGE LOADING
-========================================================= */
-
-html.js body {
-    opacity: 0;
-    animation: failsafe 0s 4s forwards;
-}
-
-html.js.go body {
-    opacity: 1;
-    animation: none;
-}
-
-@keyframes failsafe {
-    to {
-        opacity: 1;
-    }
-}
-
-
-/* ---------------------------------------------------------
-   Loader + page transition
---------------------------------------------------------- */
-
-.ld {
-    position: fixed;
-    inset: 0;
-    z-index: 999;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-
-    padding: 6vw;
-
-    background: var(--navy);
-    color: #fff;
-
-    transition: transform 0.9s cubic-bezier(.7, 0, .2, 1);
-}
-
-.ld.out {
-    transform: translateY(-100%);
-}
-
-.ld-n {
-    font: 400 clamp(4rem, 14vw, 11rem)/1 "Dachithelynx", sans-serif;
-    font-variant-numeric: tabular-nums;
-}
-
-.ld-l {
-    display: block;
-
-    height: 2px;
-    margin-top: 20px;
-
-    background: var(--rl);
-
-    transform: scaleX(0);
-    transform-origin: left;
-}
-
-.pt {
-    position: fixed;
-    inset: 0;
-    z-index: 998;
-
-    background: var(--navy);
-
-    transform: translateY(100%);
-    transition: transform 0.55s cubic-bezier(.7, 0, .2, 1);
-
-    pointer-events: none;
-}
-
-html.pt-in .pt,
-html.pt-out .pt {
-    transform: none;
-    pointer-events: all;
-}
-
-.prog {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 60;
-
-    height: 2px;
-
-    background: var(--rl);
-
-    transform: scaleX(0);
-    transform-origin: left;
-}
-
-
-/* =========================================================
-   2. HERO SECTION
-========================================================= */
-
-html.js:not(.ready) .hero h1 span i {
-    animation-play-state: paused;
-}
-
-.hero::before {
-    content: "";
-
-    position: absolute;
-    inset: 0;
-
-    pointer-events: none;
-
-    background-image:
-        linear-gradient(rgba(119, 201, 242, .35) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(119, 201, 242, .35) 1px, transparent 1px);
-
-    background-size: 64px 64px;
-
-    -webkit-mask-image: radial-gradient(
-        240px at var(--mx, 72%) var(--my, 35%),
-        #000,
-        transparent
-    );
-
-    mask-image: radial-gradient(
-        240px at var(--mx, 72%) var(--my, 35%),
-        #000,
-        transparent
-    );
-}
-
-
-/* Hero crosshairs */
-
-.hx {
-    position: absolute;
-    inset: 0;
-
-    pointer-events: none;
-}
-
-.hx i {
-    position: absolute;
-
-    width: 17px;
-    height: 17px;
-
-    opacity: 0;
-
-    transition: opacity 1s 1.2s;
-
-    background:
-        linear-gradient(var(--rl), var(--rl)) center / 1px 100% no-repeat,
-        linear-gradient(var(--rl), var(--rl)) center / 100% 1px no-repeat;
-}
-
-html.ready .hx i {
-    opacity: .7;
-}
-
-.hx b {
-    position: absolute;
-    top: 104px;
-    right: 4vw;
-
-    color: var(--rl);
-
-    font: 400 12px "Mersad", monospace;
-    letter-spacing: .14em;
-
-    opacity: .8;
-
-    font-variant-numeric: tabular-nums;
-}
-
-
-/* Hero image reveal */
-
-.hero .photo {
-    clip-path: inset(0 0 100% 0);
-
-    transition: clip-path 1.3s .35s cubic-bezier(.7, 0, .2, 1);
-}
-
-html.ready .hero .photo {
-    clip-path: inset(0);
-}
-
-html:not(.js) .hero .photo {
-    clip-path: none;
-}
-
-.hero .photo img {
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-    object-position: center top;
-
-    transform: scale(1.12);
-
-    will-change: transform;
-}
-
-
-/* Hero labels */
-
-.hero-index {
-    position: absolute;
-    left: 0;
-    bottom: -40px;
-
-    display: flex;
-    gap: 18px;
-
-    color: var(--rl);
-
-    font-size: 12px;
-    letter-spacing: .16em;
-
-    opacity: .8;
-}
-
-.eyebrow {
-    display: block;
-
-    color: var(--rl);
-
-    font-size: 13px;
-    letter-spacing: .2em;
-    text-transform: uppercase;
-}
-
-.hero-content {
-    position: relative;
-}
-
-.hero .accent i {
-    color: var(--rl);
-}
-
-
-/* =========================================================
-   3. LABELS + HEADINGS
-========================================================= */
-
-.section-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 14px;
-
-    color: var(--muted);
-
-    font: 400 12px "Mersad", sans-serif;
-    letter-spacing: .2em;
-}
-
-.section-label::after {
-    content: "";
-
-    width: 0;
-    height: 1px;
-
-    background: currentColor;
-
-    transition: width 1s .3s;
-}
-
-.in .section-label::after,
-.section-label.in::after {
-    width: 80px;
-}
-
-html.js .reveal h2 {
-    clip-path: inset(-.2em 100% -.2em -.05em);
-
-    transition: clip-path 1.1s .1s cubic-bezier(.7, 0, .2, 1);
-}
-
-html.js .reveal.in h2 {
-    clip-path: inset(-.2em -.2em);
-}
-
-.heading-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 20px;
-}
-
-.text-link {
-    padding-bottom: 2px;
-
-    border-bottom: 1px solid currentColor;
-}
-
-
-/* =========================================================
-   4. STATISTICS
-========================================================= */
-
-.stat {
-    padding-left: 20px;
-
-    border-left: 1px solid var(--line);
-}
-
-html.js .reveal .stat {
-    opacity: 0;
-    transform: translateY(30px);
-
-    transition: .8s;
-}
-
-html.js .reveal.in .stat {
-    opacity: 1;
-    transform: none;
-}
-
-.stat:nth-child(2) {
-    transition-delay: .12s !important;
-}
-
-.stat:nth-child(3) {
-    transition-delay: .24s !important;
-}
-
-.stat:nth-child(4) {
-    transition-delay: .36s !important;
-}
-
-
-/* =========================================================
-   5. BUTTONS
-========================================================= */
-
-.btn {
-    position: relative;
-    z-index: 0;
-
-    overflow: hidden;
-}
-
-.btn::before {
-    content: "";
-
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-
-    background: var(--rl);
-
-    transform: scaleX(0);
-    transform-origin: left;
-
-    transition: transform .45s cubic-bezier(.7, 0, .2, 1);
-}
-
-.btn:hover::before {
-    transform: scaleX(1);
-}
-
-.btn:hover {
-    color: var(--navy);
-}
-
-.btn.outline {
-    background: transparent;
-}
-
-
-/* =========================================================
-   6. CARDS
-========================================================= */
-
-.card .img img {
-    transition: transform .9s cubic-bezier(.2, .8, .2, 1);
-}
-
-.card:hover .img img {
-    transform: scale(1.07);
-}
-
-.card h3 {
-    display: inline;
-
-    background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
-
-    transition: background-size .5s;
-}
-
-.card:hover h3 {
-    background-size: 100% 1px;
-}
-
-
-/* =========================================================
-   7. CLUBS
-========================================================= */
-
-.club {
-    overflow: hidden;
-}
-
-.club > * {
-    position: relative;
-    z-index: 1;
-}
-
-.club-number {
-    position: absolute;
-    top: 30px;
-    right: 5vw;
-
-    font: 400 14px "Mersad";
-    letter-spacing: .2em;
-
-    opacity: .8;
-}
-
-.club-description {
-    display: block;
-
-    margin-bottom: 10px;
-
-    font-size: 12px;
-    letter-spacing: .16em;
-
-    opacity: .85;
-}
-
-.club-link {
-    display: inline-block;
-
-    margin-top: 14px;
-
-    border-bottom: 1px solid #fff;
-
-    transition: transform .4s;
-}
-
-.club:hover .club-link {
-    transform: translateX(8px);
-}
-
-
-/* Club SVG artwork */
-
-.club svg.art {
-    position: absolute !important;
-    top: 60px;
-    right: 4vw;
-
-    width: min(260px, 50%);
-
-    fill: none;
-    stroke: #fff;
-    stroke-width: 1.2;
-
-    opacity: .55;
-
-    transition: transform 1.2s cubic-bezier(.2, .8, .2, 1);
-}
-
-.club svg.art * {
-    stroke-dasharray: 500;
-    stroke-dashoffset: 500;
-
-    transition: stroke-dashoffset 2s cubic-bezier(.5, 0, .2, 1);
-}
-
-.club.drawn svg.art * {
-    stroke-dashoffset: 0;
-}
-
-.club:hover svg.art {
-    transform: rotate(6deg) scale(1.06);
-}
-
-html:not(.js) .club svg.art * {
-    stroke-dashoffset: 0;
-}
-
-
-/* =========================================================
-   8. ABOUT PAGE STEPS
-========================================================= */
-
-html.js .steps div {
-    transform: scaleY(0);
-    transform-origin: bottom;
-
-    transition: transform .9s cubic-bezier(.2, .8, .2, 1);
-}
-
-html.js .steps.in div {
-    transform: none;
-}
-
-.steps div:nth-child(2) {
-    transition-delay: .15s !important;
-}
-
-.steps div:nth-child(3) {
-    transition-delay: .3s !important;
-}
-
-.steps div:nth-child(4) {
-    transition-delay: .45s !important;
-}
-
-
-/* =========================================================
-   9. INITIAL MOBILE + REDUCED MOTION
-========================================================= */
-
-@media (max-width: 860px) {
-    .hx b,
-    .hero-index {
-        display: none;
-    }
-
-    .hero::before {
-        display: none;
-    }
-
-    .hero .photo img {
-        transform: none;
-    }
-
-    .club svg.art {
-        width: 150px;
-        top: 70px;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    html.js body {
-        opacity: 1;
-    }
-
-    .ld,
-    .pt,
-    .prog {
-        display: none;
-    }
-
-    .hero .photo {
-        clip-path: none;
-    }
-
-    html.js .reveal h2 {
-        clip-path: none;
-    }
-
-    html.js .steps div,
-    html.js .reveal .stat {
-        transform: none;
-        opacity: 1;
-    }
-
-    .club svg.art * {
-        stroke-dashoffset: 0;
-    }
-}
-
-
-/* =========================================================
-   10. V2 — INNER PAGES + GLOBAL SCROLL ANIMATIONS
-========================================================= */
-
-
-/* Inner page heroes */
-
-.page {
-    position: relative;
-    overflow: hidden;
-
-    animation: drift 40s linear infinite;
-}
-
-.page .wrap {
-    position: relative;
-}
-
-.page::before {
-    content: "";
-
-    position: absolute;
-    inset: 0;
-
-    pointer-events: none;
-
-    background-image:
-        linear-gradient(rgba(119, 201, 242, .35) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(119, 201, 242, .35) 1px, transparent 1px);
-
-    background-size: 64px 64px;
-
-    -webkit-mask-image: radial-gradient(
-        260px at var(--mx, 70%) var(--my, 40%),
-        #000,
-        transparent
-    );
-
-    mask-image: radial-gradient(
-        260px at var(--mx, 70%) var(--my, 40%),
-        #000,
-        transparent
-    );
-}
-
-@keyframes drift {
-    to {
-        background-position: 64px 64px;
-    }
-}
-
-
-/* Animated page titles */
-
-.w {
-    display: inline-block;
-    overflow: hidden;
-
-    padding-bottom: .12em;
-
-    vertical-align: top;
-}
-
-.w i {
-    display: inline-block;
-
-    font-style: normal;
-
-    transform: translateY(115%);
-
-    transition: transform 1.1s calc(.15s + var(--i) * .09s) cubic-bezier(.2, .8, .2, 1);
-}
-
-html.ready .w i,
-html:not(.js) .w i {
-    transform: none;
-}
-
-
-/* Inner page paragraph */
-
-html.js .page p {
-    opacity: 0;
-    transform: translateY(24px);
-
-    transition:
-        opacity 1s .7s,
-        transform 1s .7s;
-}
-
-html.ready .page p {
-    opacity: .85;
-    transform: none;
-}
-
-
-/* Decorative line under page content */
-
-.page .wrap::after {
-    content: "";
-
-    display: block;
-
-    width: 0;
-    height: 4px;
-
-    margin-top: 34px;
-
-    background: var(--rl);
-
-    transition: width 1.3s .9s cubic-bezier(.7, 0, .2, 1);
-}
-
-html.ready .page .wrap::after {
-    width: 140px;
-}
-
-.page.stem .wrap::after {
-    background: linear-gradient(90deg, var(--so), var(--sb));
-}
-
-.page.rob .wrap::after {
-    background: linear-gradient(90deg, var(--rp), var(--rb), var(--rl));
-}
-
-
-/* Automatic scroll-in animations */
-
-html.js .mv {
-    opacity: 0;
-    transform: translateY(60px);
-
-    transition:
-        opacity .9s calc(var(--i, 0) * .1s),
-        transform 1.1s calc(var(--i, 0) * .1s) cubic-bezier(.2, .8, .2, 1);
-}
-
-html.js .mv.in {
-    opacity: 1;
-    transform: none;
-}
-
-
-/* Animated section headings */
-
-html.js h2.mv {
-    opacity: 1;
-    transform: none;
-
-    clip-path: inset(-.2em 100% -.2em -.05em);
-
-    transition: clip-path 1.2s cubic-bezier(.7, 0, .2, 1);
-}
-
-html.js h2.mv.in {
-    clip-path: inset(-.2em -.2em);
-}
-
-
-/* Cards */
-
-html.js .card.cv {
-    opacity: 0;
-    transform: translateY(70px) scale(.97);
-
-    transition:
-        opacity .9s calc(var(--i, 0) * .1s),
-        transform 1.1s calc(var(--i, 0) * .1s) cubic-bezier(.2, .8, .2, 1);
-}
-
-html.js .card.cv.in {
-    opacity: 1;
-    transform: none;
-}
-
-footer {
-    overflow: hidden;
-}
-
-
-/* =========================================================
-   11. MARQUEE
-========================================================= */
-
-.mq {
-    overflow: hidden;
-
-    padding: 20px 0;
-
-    background: var(--rl);
-    color: var(--navy);
-
-    white-space: nowrap;
-
-    font: 400 clamp(1.5rem, 3.4vw, 2.8rem)/1 "Dachithelynx", sans-serif;
-    letter-spacing: .05em;
-}
-
-.mq div {
-    display: inline-flex;
-
-    animation: mq 32s linear infinite;
-
-    will-change: transform;
-}
-
-@keyframes mq {
-    to {
-        transform: translateX(-50%);
-    }
-}
-
-
-/* =========================================================
-   12. CUSTOM CURSOR
-========================================================= */
-
-.cur {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-
-    pointer-events: none;
-
-    mix-blend-mode: difference;
-}
-
-.cur::before {
-    content: "";
-
-    position: absolute;
-
-    width: 34px;
-    height: 34px;
-
-    margin: -17px 0 0 -17px;
-
-    border: 1px solid #fff;
-    border-radius: 50%;
-
-    opacity: 0;
-
-    transition:
-        transform .3s,
-        opacity .3s,
-        background .3s;
-}
-
-.cur.on::before {
-    opacity: 1;
-}
-
-.cur.big::before {
-    transform: scale(2);
-    background: rgba(255, 255, 255, .25);
-}
-
-
-/* Inner page mobile adjustments */
-
-@media (max-width: 860px) {
-    .page::before {
-        display: none;
-    }
-
-    .mq {
-        padding: 14px 0;
-    }
-}
-
-
-/* Reduced motion */
-
-@media (prefers-reduced-motion: reduce) {
-    .mq div,
-    .page {
-        animation: none;
-    }
-
-    .w i {
-        transform: none;
-    }
-
-    html.js .mv,
-    html.js .card.cv {
-        opacity: 1;
-        transform: none;
-    }
-
-    html.js h2.mv {
-        clip-path: none;
-    }
-
-    html.js .page p {
-        opacity: .85;
-        transform: none;
-    }
-
-    .cur {
-        display: none;
-    }
-}
-
-
-/* =========================================================
-   13. V3 — MOBILE-SPECIFIC MOTION
-========================================================= */
-
-
-/* Animated grid glow */
-
-@property --mx {
-    syntax: "<length-percentage>";
-    inherits: true;
-    initial-value: 70%;
-}
-
-@property --my {
-    syntax: "<length-percentage>";
-    inherits: true;
-    initial-value: 35%;
-}
-
-@keyframes roam {
-    0% {
-        --mx: 15%;
-        --my: 25%;
-    }
-
-    33% {
-        --mx: 85%;
-        --my: 45%;
-    }
-
-    66% {
-        --mx: 40%;
-        --my: 80%;
-    }
-
-    100% {
-        --mx: 90%;
-        --my: 15%;
-    }
-}
-
-
-@media (max-width: 860px) {
-
-    /* Grid light moves automatically */
-
-    .hero::before,
-    .page::before {
-        display: block;
-
-        animation: roam 14s ease-in-out infinite alternate;
-
-        -webkit-mask-image: radial-gradient(
-            170px at var(--mx) var(--my),
-            #000,
-            transparent
-        );
-
-        mask-image: radial-gradient(
-            170px at var(--mx) var(--my),
-            #000,
-            transparent
-        );
-    }
-
-    .hx {
-        display: block;
-    }
-
-    .hx b {
-        display: none;
-    }
-
-
-    /* Mobile navigation */
-
-    nav li {
-        opacity: 0;
-        transform: translateY(40px);
-
-        transition:
-            opacity .5s,
-            transform .7s cubic-bezier(.2, .8, .2, 1);
-    }
-
-    nav.open li {
-        opacity: 1;
-        transform: none;
-    }
-
-    nav.open li:nth-child(1) {
-        transition-delay: .20s;
-    }
-
-    nav.open li:nth-child(2) {
-        transition-delay: .26s;
-    }
-
-    nav.open li:nth-child(3) {
-        transition-delay: .32s;
-    }
-
-    nav.open li:nth-child(4) {
-        transition-delay: .38s;
-    }
-
-    nav.open li:nth-child(5) {
-        transition-delay: .44s;
-    }
-
-    nav.open li:nth-child(6) {
-        transition-delay: .50s;
-    }
-
-    nav.open li:nth-child(7) {
-        transition-delay: .56s;
-    }
-
-    nav.open li:nth-child(8) {
-        transition-delay: .62s;
-    }
-
-    nav a {
-        font-family: "Dachithelynx", sans-serif;
-        font-size: 28px;
-        opacity: 1;
-    }
-
-
-    /* Touch feedback */
-
-    .card:active {
-        transform: scale(.97);
-    }
-
-    .club:active {
-        filter: brightness(1.12);
-    }
-
-    .btn:active::before {
-        transform: scaleX(1);
-    }
-
-    .btn:active {
-        color: var(--navy);
-    }
-
-
-    /* Mobile statistics */
-
-    .stat {
-        border-left: 2px solid var(--rl);
-    }
-
-
-    /* Mobile hero index */
-
-    .hero-index {
-        display: flex;
-        position: static;
-
-        flex-direction: column;
-        gap: 6px;
-
-        margin-top: 28px;
-    }
-
-
-    /* Mobile image reveal */
-
-    .hero .photo {
-        clip-path: inset(0 0 100% 0);
-    }
-
-    html.ready .hero .photo {
-        clip-path: inset(0);
-    }
-
-
-    /* Mobile marquee */
-
-    .mq {
-        font-size: 1.7rem;
-    }
-
-    .mq div {
-        animation-duration: 20s;
-    }
-}
-
-
-/* =========================================================
-   14. V4 — DESKTOP + MOBILE SHARED EFFECTS
-========================================================= */
-
-
-/* Automatic roaming glow */
-
-@property --rx {
-    syntax: "<length-percentage>";
-    inherits: true;
-    initial-value: 20%;
-}
-
-@property --ry {
-    syntax: "<length-percentage>";
-    inherits: true;
-    initial-value: 30%;
-}
-
-@keyframes roam2 {
-    0% {
-        --rx: 10%;
-        --ry: 25%;
-    }
-
-    33% {
-        --rx: 88%;
-        --ry: 50%;
-    }
-
-    66% {
-        --rx: 40%;
-        --ry: 85%;
-    }
-
-    100% {
-        --rx: 92%;
-        --ry: 12%;
-    }
-}
-
-
-/* Cursor glow uses ::after */
-
-.hero::after,
-.page::after {
-    content: "";
-
-    position: absolute;
-    inset: 0;
-
-    pointer-events: none;
-
-    background-image:
-        linear-gradient(rgba(119, 201, 242, .5) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(119, 201, 242, .5) 1px, transparent 1px);
-
-    background-size: 64px 64px;
-
-    -webkit-mask-image: radial-gradient(
-        220px at var(--mx, 72%) var(--my, 35%),
-        #000,
-        transparent
-    );
-
-    mask-image: radial-gradient(
-        220px at var(--mx, 72%) var(--my, 35%),
-        #000,
-        transparent
-    );
-}
-
-
-/* Desktop-specific effects */
-
-@media (min-width: 861px) {
-
-    /* Roaming background glow */
-
-    .hero::before,
-    .page::before {
-        animation: roam2 16s ease-in-out infinite alternate;
-
-        -webkit-mask-image: radial-gradient(
-            260px at var(--rx) var(--ry),
-            #000,
-            transparent
-        );
-
-        mask-image: radial-gradient(
-            260px at var(--rx) var(--ry),
-            #000,
-            transparent
-        );
-    }
-
-
-    /* Desktop navigation animation */
-
-    html.js header .logo,
-    html.js header nav li {
-        opacity: 0;
-        transform: translateY(-18px);
-
-        transition:
-            opacity .6s,
-            transform .8s cubic-bezier(.2, .8, .2, 1);
-    }
-
-    html.ready header .logo,
-    html.ready header nav li {
-        opacity: 1;
-        transform: none;
-    }
-
-    html.ready header nav li:nth-child(1) {
-        transition-delay: .35s;
-    }
-
-    html.ready header nav li:nth-child(2) {
-        transition-delay: .42s;
-    }
-
-    html.ready header nav li:nth-child(3) {
-        transition-delay: .49s;
-    }
-
-    html.ready header nav li:nth-child(4) {
-        transition-delay: .56s;
-    }
-
-    html.ready header nav li:nth-child(5) {
-        transition-delay: .63s;
-    }
-
-    html.ready header nav li:nth-child(6) {
-        transition-delay: .70s;
-    }
-
-    html.ready header nav li:nth-child(7) {
-        transition-delay: .77s;
-    }
-
-    html.ready header nav li:nth-child(8) {
-        transition-delay: .84s;
-    }
-}
-
-
-/* Shared mobile and desktop adjustments */
-
-@media (max-width: 860px) {
-    .hero::after,
-    .page::after {
-        display: none;
-    }
-}
-
-.card:active {
-    transform: scale(.97);
-}
-
-.btn:active::before {
-    transform: scaleX(1);
-}
-
-.stat {
-    border-left: 2px solid var(--rl);
-}
-
-.mq div {
-    animation-duration: 20s;
-}
+/* MOTION LAYER: loaded after style.css. Remove the link to turn everything off. */
+html.js body{opacity:0;animation:failsafe 0s 4s forwards}
+html.js.go body{opacity:1;animation:none}
+@keyframes failsafe{to{opacity:1}}
+
+/* loader + page transition */
+.ld{position:fixed;inset:0;z-index:999;background:var(--navy);color:#fff;display:flex;flex-direction:column;justify-content:flex-end;padding:6vw;transition:transform .9s cubic-bezier(.7,0,.2,1)}
+.ld.out{transform:translateY(-100%)}
+.ld-n{font:400 clamp(4rem,14vw,11rem)/1 "Dachithelynx",sans-serif;font-variant-numeric:tabular-nums}
+.ld-l{display:block;height:2px;margin-top:20px;background:var(--rl);transform:scaleX(0);transform-origin:left}
+.pt{position:fixed;inset:0;z-index:998;background:var(--navy);transform:translateY(100%);transition:transform .55s cubic-bezier(.7,0,.2,1);pointer-events:none}
+html.pt-in .pt,html.pt-out .pt{transform:none;pointer-events:all}
+.prog{position:fixed;top:0;left:0;right:0;height:2px;background:var(--rl);transform:scaleX(0);transform-origin:left;z-index:60}
+
+/* hero */
+html.js:not(.ready) .hero h1 span i{animation-play-state:paused}
+.hero::before{content:"";position:absolute;inset:0;pointer-events:none;
+ background-image:linear-gradient(rgba(119,201,242,.35) 1px,transparent 1px),linear-gradient(90deg,rgba(119,201,242,.35) 1px,transparent 1px);background-size:64px 64px;
+ -webkit-mask-image:radial-gradient(240px at var(--mx,72%) var(--my,35%),#000,transparent);mask-image:radial-gradient(240px at var(--mx,72%) var(--my,35%),#000,transparent)}
+.hx{position:absolute;inset:0;pointer-events:none}
+.hx i{position:absolute;width:17px;height:17px;opacity:0;transition:opacity 1s 1.2s;
+ background:linear-gradient(var(--rl),var(--rl)) center/1px 100% no-repeat,linear-gradient(var(--rl),var(--rl)) center/100% 1px no-repeat}
+html.ready .hx i{opacity:.7}
+.hx b{position:absolute;right:4vw;top:104px;font:400 12px "Mersad",monospace;letter-spacing:.14em;color:var(--rl);opacity:.8;font-variant-numeric:tabular-nums}
+.hero .photo{clip-path:inset(0 0 100% 0);transition:clip-path 1.3s .35s cubic-bezier(.7,0,.2,1)}
+html.ready .hero .photo{clip-path:inset(0)}
+html:not(.js) .hero .photo{clip-path:none}
+.hero .photo img{width:100%;height:100%;object-fit:cover;object-position:center top;transform:scale(1.12);will-change:transform}
+.hero-index{position:absolute;left:0;bottom:-40px;font-size:12px;letter-spacing:.16em;color:var(--rl);display:flex;gap:18px;opacity:.8}
+.eyebrow{display:block;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--rl)}
+.hero-content{position:relative}
+.hero .accent i{color:var(--rl)}
+
+/* labels, headings */
+.section-label{display:inline-flex;align-items:center;gap:14px;font:400 12px "Mersad",sans-serif;letter-spacing:.2em;color:var(--muted)}
+.section-label::after{content:"";width:0;height:1px;background:currentColor;transition:width 1s .3s}
+.in .section-label::after,.section-label.in::after{width:80px}
+html.js .reveal h2{clip-path:inset(-.2em 100% -.2em -.05em);transition:clip-path 1.1s .1s cubic-bezier(.7,0,.2,1)}
+html.js .reveal.in h2{clip-path:inset(-.2em -.2em)}
+.heading-row{display:flex;justify-content:space-between;align-items:flex-end;gap:20px}
+.text-link{border-bottom:1px solid currentColor;padding-bottom:2px}
+
+/* stats */
+.stat{border-left:1px solid var(--line);padding-left:20px}
+html.js .reveal .stat{opacity:0;transform:translateY(30px);transition:.8s}
+html.js .reveal.in .stat{opacity:1;transform:none}
+.stat:nth-child(2){transition-delay:.12s!important}.stat:nth-child(3){transition-delay:.24s!important}.stat:nth-child(4){transition-delay:.36s!important}
+
+/* buttons */
+.btn{position:relative;overflow:hidden;z-index:0}
+.btn::before{content:"";position:absolute;inset:0;background:var(--rl);transform:scaleX(0);transform-origin:left;transition:transform .45s cubic-bezier(.7,0,.2,1);z-index:-1}
+.btn:hover::before{transform:scaleX(1)}.btn:hover{color:var(--navy)}
+.btn.outline{background:transparent}
+
+/* cards */
+.card .img img{transition:transform .9s cubic-bezier(.2,.8,.2,1)}
+.card:hover .img img{transform:scale(1.07)}
+.card h3{background:linear-gradient(currentColor,currentColor) 0 100%/0 1px no-repeat;transition:background-size .5s;display:inline}
+.card:hover h3{background-size:100% 1px}
+
+/* clubs */
+.club{overflow:hidden}
+.club>*{position:relative;z-index:1}
+.club-number{position:absolute;top:30px;right:5vw;font:400 14px "Mersad";letter-spacing:.2em;opacity:.8}
+.club-description{display:block;font-size:12px;letter-spacing:.16em;opacity:.85;margin-bottom:10px}
+.club-link{display:inline-block;margin-top:14px;border-bottom:1px solid #fff;transition:transform .4s}
+.club:hover .club-link{transform:translateX(8px)}
+.club svg.art{position:absolute!important;right:4vw;top:60px;width:min(260px,50%);fill:none;stroke:#fff;stroke-width:1.2;opacity:.55;transition:transform 1.2s cubic-bezier(.2,.8,.2,1)}
+.club svg.art *{stroke-dasharray:500;stroke-dashoffset:500;transition:stroke-dashoffset 2s cubic-bezier(.5,0,.2,1)}
+.club.drawn svg.art *{stroke-dashoffset:0}
+.club:hover svg.art{transform:rotate(6deg) scale(1.06)}
+html:not(.js) .club svg.art *{stroke-dashoffset:0}
+
+/* steps (about page) */
+html.js .steps div{transform:scaleY(0);transform-origin:bottom;transition:transform .9s cubic-bezier(.2,.8,.2,1)}
+html.js .steps.in div{transform:none}
+.steps div:nth-child(2){transition-delay:.15s!important}.steps div:nth-child(3){transition-delay:.3s!important}.steps div:nth-child(4){transition-delay:.45s!important}
+
+@media(max-width:860px){.hx b,.hero-index{display:none}.hero::before{display:none}.hero .photo img{transform:none}.club svg.art{width:150px;top:70px}}
+@media(prefers-reduced-motion:reduce){html.js body{opacity:1}.ld,.pt,.prog{display:none}.hero .photo{clip-path:none}html.js .reveal h2{clip-path:none}html.js .steps div,html.js .reveal .stat{transform:none;opacity:1}.club svg.art *{stroke-dashoffset:0}}
+
+/* ===== V2: stronger + works on every page ===== */
+/* inner page heroes */
+.page{position:relative;overflow:hidden}
+.page .wrap{position:relative}
+.page::before{content:"";position:absolute;inset:0;pointer-events:none;
+ background-image:linear-gradient(rgba(119,201,242,.35) 1px,transparent 1px),linear-gradient(90deg,rgba(119,201,242,.35) 1px,transparent 1px);background-size:64px 64px;
+ -webkit-mask-image:radial-gradient(260px at var(--mx,70%) var(--my,40%),#000,transparent);mask-image:radial-gradient(260px at var(--mx,70%) var(--my,40%),#000,transparent)}
+.page{animation:drift 40s linear infinite}
+@keyframes drift{to{background-position:64px 64px}}
+.w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.12em}
+.w i{display:inline-block;font-style:normal;transform:translateY(115%);transition:transform 1.1s calc(.15s + var(--i)*.09s) cubic-bezier(.2,.8,.2,1)}
+html.ready .w i,html:not(.js) .w i{transform:none}
+html.js .page p{opacity:0;transform:translateY(24px);transition:opacity 1s .7s,transform 1s .7s}
+html.ready .page p{opacity:.85;transform:none}
+.page .wrap::after{content:"";display:block;height:4px;width:0;margin-top:34px;background:var(--rl);transition:width 1.3s .9s cubic-bezier(.7,0,.2,1)}
+html.ready .page .wrap::after{width:140px}
+.page.stem .wrap::after{background:linear-gradient(90deg,var(--so),var(--sb))}
+.page.rob .wrap::after{background:linear-gradient(90deg,var(--rp),var(--rb),var(--rl))}
+/* auto scroll-in for everything else */
+html.js .mv{opacity:0;transform:translateY(60px);transition:opacity .9s calc(var(--i,0)*.1s),transform 1.1s calc(var(--i,0)*.1s) cubic-bezier(.2,.8,.2,1)}
+html.js .mv.in{opacity:1;transform:none}
+html.js h2.mv{opacity:1;transform:none;clip-path:inset(-.2em 100% -.2em -.05em);transition:clip-path 1.2s cubic-bezier(.7,0,.2,1)}
+html.js h2.mv.in{clip-path:inset(-.2em -.2em)}
+html.js .card.cv{opacity:0;transform:translateY(70px) scale(.97);transition:opacity .9s calc(var(--i,0)*.1s),transform 1.1s calc(var(--i,0)*.1s) cubic-bezier(.2,.8,.2,1)}
+html.js .card.cv.in{opacity:1;transform:none}
+footer{overflow:hidden}
+/* marquee */
+.mq{background:var(--rl);color:var(--navy);overflow:hidden;white-space:nowrap;padding:20px 0;font:400 clamp(1.5rem,3.4vw,2.8rem)/1 "Dachithelynx",sans-serif;letter-spacing:.05em}
+.mq div{display:inline-flex;animation:mq 32s linear infinite;will-change:transform}
+@keyframes mq{to{transform:translateX(-50%)}}
+/* cursor */
+.cur{position:fixed;top:0;left:0;z-index:1000;pointer-events:none;mix-blend-mode:difference}
+.cur::before{content:"";position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;border:1px solid #fff;border-radius:50%;opacity:0;transition:transform .3s,opacity .3s,background .3s}
+.cur.on::before{opacity:1}.cur.big::before{transform:scale(2);background:rgba(255,255,255,.25)}
+@media(max-width:860px){.page::before{display:none}.mq{padding:14px 0}}
+@media(prefers-reduced-motion:reduce){.mq div,.page{animation:none}.w i{transform:none}html.js .mv,html.js .card.cv{opacity:1;transform:none}html.js h2.mv{clip-path:none}html.js .page p{opacity:.85;transform:none}.cur{display:none}}
+
+/* ===== V3: phone-specific motion (no mouse needed) ===== */
+@property --mx{syntax:"<length-percentage>";inherits:true;initial-value:70%}
+@property --my{syntax:"<length-percentage>";inherits:true;initial-value:35%}
+@keyframes roam{0%{--mx:15%;--my:25%}33%{--mx:85%;--my:45%}66%{--mx:40%;--my:80%}100%{--mx:90%;--my:15%}}
+@media(max-width:860px){
+ /* grid light roams on its own, since there is no cursor */
+ .hero::before,.page::before{display:block;animation:roam 14s ease-in-out infinite alternate;
+  -webkit-mask-image:radial-gradient(170px at var(--mx) var(--my),#000,transparent);mask-image:radial-gradient(170px at var(--mx) var(--my),#000,transparent)}
+ .hx{display:block}.hx b{display:none}
+ /* menu links rise in one by one */
+ nav li{opacity:0;transform:translateY(40px);transition:opacity .5s,transform .7s cubic-bezier(.2,.8,.2,1)}
+ nav.open li{opacity:1;transform:none}
+ nav.open li:nth-child(1){transition-delay:.20s}nav.open li:nth-child(2){transition-delay:.26s}nav.open li:nth-child(3){transition-delay:.32s}
+ nav.open li:nth-child(4){transition-delay:.38s}nav.open li:nth-child(5){transition-delay:.44s}nav.open li:nth-child(6){transition-delay:.50s}
+ nav.open li:nth-child(7){transition-delay:.56s}nav.open li:nth-child(8){transition-delay:.62s}
+ nav a{font-family:"Dachithelynx",sans-serif;font-size:28px;opacity:1}
+ /* touch feedback */
+ .card:active{transform:scale(.97)}.club:active{filter:brightness(1.12)}
+ .btn:active::before{transform:scaleX(1)}.btn:active{color:var(--navy)}
+ /* stats stack with a clear rhythm */
+ .stat{border-left:2px solid var(--rl)}
+ .hero-index{display:flex;position:static;margin-top:28px;flex-direction:column;gap:6px}
+ .hero .photo{clip-path:inset(0 0 100% 0)}html.ready .hero .photo{clip-path:inset(0)}
+ .mq{font-size:1.7rem}.mq div{animation-duration:20s}
+}
+
+/* ===== V4: phone effects on laptop/desktop too ===== */
+@property --rx{syntax:"<length-percentage>";inherits:true;initial-value:20%}
+@property --ry{syntax:"<length-percentage>";inherits:true;initial-value:30%}
+@keyframes roam2{0%{--rx:10%;--ry:25%}33%{--rx:88%;--ry:50%}66%{--rx:40%;--ry:85%}100%{--rx:92%;--ry:12%}}
+/* cursor glow moves to ::after, roaming glow takes ::before */
+.hero::after,.page::after{content:"";position:absolute;inset:0;pointer-events:none;
+ background-image:linear-gradient(rgba(119,201,242,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(119,201,242,.5) 1px,transparent 1px);background-size:64px 64px;
+ -webkit-mask-image:radial-gradient(220px at var(--mx,72%) var(--my,35%),#000,transparent);mask-image:radial-gradient(220px at var(--mx,72%) var(--my,35%),#000,transparent)}
+@media(min-width:861px){
+ .hero::before,.page::before{animation:roam2 16s ease-in-out infinite alternate;
+  -webkit-mask-image:radial-gradient(260px at var(--rx) var(--ry),#000,transparent);mask-image:radial-gradient(260px at var(--rx) var(--ry),#000,transparent)}
+ /* nav links drop in one by one */
+ html.js header .logo,html.js header nav li{opacity:0;transform:translateY(-18px);transition:opacity .6s,transform .8s cubic-bezier(.2,.8,.2,1)}
+ html.ready header .logo,html.ready header nav li{opacity:1;transform:none}
+ html.ready header nav li:nth-child(1){transition-delay:.35s}html.ready header nav li:nth-child(2){transition-delay:.42s}html.ready header nav li:nth-child(3){transition-delay:.49s}
+ html.ready header nav li:nth-child(4){transition-delay:.56s}html.ready header nav li:nth-child(5){transition-delay:.63s}html.ready header nav li:nth-child(6){transition-delay:.7s}
+ html.ready header nav li:nth-child(7){transition-delay:.77s}html.ready header nav li:nth-child(8){transition-delay:.84s}
+}
+@media(max-width:860px){.hero::after,.page::after{display:none}}
+/* shared with phone */
+.card:active{transform:scale(.97)}.btn:active::before{transform:scaleX(1)}
+.stat{border-left:2px solid var(--rl)}
+.mq div{animation-duration:20s}
+
+/* ===== V5: headings can never stay hidden ===== */
+html.js h2.mv{clip-path:none!important;opacity:0;transform:translateY(50px);
+ transition:opacity .9s,transform 1.1s cubic-bezier(.2,.8,.2,1)}
+html.js h2.mv.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){html.js h2.mv{opacity:1;transform:none}}
