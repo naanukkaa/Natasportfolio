@@ -1,6 +1,45 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
-<title>Admin login</title><link rel="stylesheet" href="../css/style.css"><link rel="stylesheet" href="../css/admin.css"></head><body>
-<form class="login f" id="lf"><h1>Sign in</h1><label>Email<input name="e" type="email" required autocomplete="username"></label>
-<label>Password<input name="p" type="password" required autocomplete="current-password"></label><button class="pri">Sign in</button><p id="m" role="alert"></p></form>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script src="../js/config.js"></script><script src="../js/admin.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Admin Login</title>
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <main>
+    <form class="login f" id="lf">
+      <h1>Sign in</h1>
+      
+      <label>
+        Email
+        <input name="e" type="email" required autocomplete="username">
+      </label>
+      
+      <label>
+        Password
+        <input name="p" type="password" required autocomplete="current-password">
+      </label>
+      
+      <button type="submit" class="pri">Sign in</button>
+      
+      <p id="m" role="alert"></p>
+    </form>
+  </main>
+
+  <!-- External Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  
+  <!-- Application Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/admin.js"></script>
+  <link rel="stylesheet" href="css/motion.css">
+  <script>document.documentElement.classList.add("js")</script>
+  <script src="js/motion.js" defer></script>
+
+</body>
+</html>

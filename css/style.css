@@ -239,8 +239,8 @@ nav a[aria-current] {
 
 .hero .photo {
     position: absolute;
-    right: 4vw;
-    bottom: 120px;
+    right: -60px;
+    bottom: 50px;
     width: min(30vw, 380px);
     aspect-ratio: 3 / 4;
     background: var(--navy2);
