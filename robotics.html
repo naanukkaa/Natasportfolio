@@ -1,0 +1,98 @@
+
+<!doctype html>
+<html lang="ka">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>რობოტიკის კლუბი — Natalia Gelitashvili</title>
+    <meta name="description" content="რობოტიკის კლუბი ნატალია გელიტაშვილის ხელმძღვანელობით — მე-4–მე-6 კლასები.">
+
+    <meta property="og:title" content="Robotics Club — Natalia Gelitashvili">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <header>
+        <div class="wrap bar">
+
+            <a class="logo" href="index.html">Natalia Gelitashvili</a>
+
+            <button class="burger" type="button" aria-label="Menu" aria-expanded="false">
+                ☰
+            </button>
+
+            <nav aria-label="Main navigation">
+                <ul>
+                    <li><a href="index.html" data-i="home"></a></li>
+                    <li><a href="about.html" data-i="about"></a></li>
+                    <li><a href="stem.html" data-i="stem"></a></li>
+                    <li><a href="robotics.html" aria-current="page" data-i="rob"></a></li>
+                    <li><a href="projects.html" data-i="proj"></a></li>
+                    <li><a href="news.html" data-i="news"></a></li>
+                    <li><a href="contact.html" data-i="contact"></a></li>
+                    <li>
+                        <button class="lang" type="button" aria-label="Change language"></button>
+                    </li>
+                </ul>
+            </nav>
+
+        </div>
+    </header>
+
+    <main>
+
+        <section class="page rob">
+            <div class="wrap">
+                <h1 data-en="Robotics Club">Robotics კლუბი</h1>
+                <p data-en="Grades 4–6. A robotics club focused on practical technology activities.">
+                    4–6 კლასები. რობოტიკის კლუბი პრაქტიკული ტექნოლოგიური აქტივობებით.
+                </p>
+            </div>
+        </section>
+
+        <section>
+            <div class="wrap">
+
+                <h2 data-en="What students learn">რას სწავლობენ მოსწავლეები</h2>
+
+                <p class="note" data-en="Information about club activities will be added here.">
+                    კლუბის აქტივობების შესახებ ინფორმაცია აქ დაემატება.
+                </p>
+
+                <h2 style="margin-top: 60px;" data-i="news"></h2>
+                <div
+                    class="news"
+                    id="news"
+                    data-cat="robotics"
+                    data-limit="6"
+                ></div>
+
+                <h2 style="margin-top: 60px;" data-i="proj"></h2>
+                <div
+                    class="news"
+                    id="projects"
+                    data-cat="robotics"
+                ></div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="wrap" data-i="rights"></div>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
+
+</body>
+</html>

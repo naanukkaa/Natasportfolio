@@ -1,0 +1,95 @@
+
+<!doctype html>
+<html lang="ka">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>სიახლეები — Natalia Gelitashvili</title>
+    <meta name="description" content="ნატალია გელიტაშვილის კლუბების შეხვედრები, ღონისძიებები და აქტივობები.">
+
+    <meta property="og:title" content="სიახლეები — Natalia Gelitashvili">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <header>
+        <div class="wrap bar">
+
+            <a class="logo" href="index.html">Natalia Gelitashvili</a>
+
+            <button class="burger" type="button" aria-label="Menu" aria-expanded="false">
+                ☰
+            </button>
+
+            <nav aria-label="Main navigation">
+                <ul>
+                    <li><a href="index.html" data-i="home"></a></li>
+                    <li><a href="about.html" data-i="about"></a></li>
+                    <li><a href="stem.html" data-i="stem"></a></li>
+                    <li><a href="robotics.html" data-i="rob"></a></li>
+                    <li><a href="projects.html" data-i="proj"></a></li>
+                    <li><a href="news.html" aria-current="page" data-i="news"></a></li>
+                    <li><a href="contact.html" data-i="contact"></a></li>
+                    <li>
+                        <button class="lang" type="button" aria-label="Change language"></button>
+                    </li>
+                </ul>
+            </nav>
+
+        </div>
+    </header>
+
+    <main>
+
+        <section class="page">
+            <div class="wrap">
+                <h1 data-en="News">სიახლეები</h1>
+                <p data-en="Club meetings and activities.">
+                    კლუბების შეხვედრები და აქტივობები.
+                </p>
+            </div>
+        </section>
+
+        <section>
+            <div class="wrap">
+
+                <div class="filters" aria-label="Filter news">
+
+                    <button class="on" type="button" data-f="" data-en="All">
+                        ყველა
+                    </button>
+
+                    <button type="button" data-f="stem">
+                        STEM
+                    </button>
+
+                    <button type="button" data-f="robotics">
+                        Robotics
+                    </button>
+
+                </div>
+
+                <div class="news" id="news"></div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="wrap" data-i="rights"></div>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,166 @@
+
+<!doctype html>
+<html lang="ka">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>კონტაქტი — Natalia Gelitashvili</title>
+    <meta name="description" content="დაუკავშირდით ნატალია გელიტაშვილს — ტექნოლოგიების მასწავლებელს და STEM/რობოტიკის კლუბების მენტორს.">
+
+    <meta property="og:title" content="კონტაქტი — Natalia Gelitashvili">
+    <meta property="og:description" content="დაუკავშირდით ნატალია გელიტაშვილს.">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <header>
+        <div class="wrap bar">
+
+            <a class="logo" href="index.html">Natalia Gelitashvili</a>
+
+            <button class="burger" type="button" aria-label="Menu" aria-expanded="false">
+                ☰
+            </button>
+
+            <nav aria-label="Main navigation">
+                <ul>
+                    <li><a href="index.html" data-i="home"></a></li>
+                    <li><a href="about.html" data-i="about"></a></li>
+                    <li><a href="stem.html" data-i="stem"></a></li>
+                    <li><a href="robotics.html" data-i="rob"></a></li>
+                    <li><a href="projects.html" data-i="proj"></a></li>
+                    <li><a href="news.html" data-i="news"></a></li>
+                    <li><a href="contact.html" aria-current="page" data-i="contact"></a></li>
+                    <li>
+                        <button class="lang" type="button" aria-label="Change language"></button>
+                    </li>
+                </ul>
+            </nav>
+
+        </div>
+    </header>
+
+    <main>
+
+        <section class="page">
+            <div class="wrap">
+                <h1 data-en="Contact">კონტაქტი</h1>
+                <p data-en="Reach out using the form below.">
+                    დაგვიკავშირდით ქვემოთ მოცემული ფორმით.
+                </p>
+            </div>
+        </section>
+
+        <section>
+            <div class="wrap two">
+
+                <form class="form" id="cf">
+
+                    <label>
+                        <span data-en="Name">სახელი</span>
+                        <input
+                            type="text"
+                            name="name"
+                            autocomplete="name"
+                            maxlength="120"
+                            required
+                        >
+                    </label>
+
+                    <label>
+                        <span>Email</span>
+                        <input
+                            type="email"
+                            name="email"
+                            autocomplete="email"
+                            maxlength="254"
+                            required
+                        >
+                    </label>
+
+                    <label>
+                        <span data-en="Subject">თემა</span>
+                        <input
+                            type="text"
+                            name="subject"
+                            maxlength="200"
+                        >
+                    </label>
+
+                    <label>
+                        <span data-en="Message">შეტყობინება</span>
+                        <textarea
+                            name="body"
+                            rows="5"
+                            maxlength="5000"
+                            required
+                        ></textarea>
+                    </label>
+
+                    <button type="submit" data-en="Send message">
+                        გაგზავნა
+                    </button>
+
+                    <p id="st" role="status" aria-live="polite"></p>
+
+                </form>
+
+                <div class="contact-info">
+
+                    <h2 data-en="Contact information">საკონტაქტო ინფორმაცია</h2>
+
+                    <p>
+                        <a
+                            href="https://www.facebook.com/share/g/1F7PpyyeVy/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Facebook
+                        </a>
+                    </p>
+
+                    <p>
+                        WhatsApp:
+                        <a href="https://wa.me/+995577621727" target="_blank" rel="noopener noreferrer">
+                            +995 577 62 17 27
+                        </a>
+                    </p>
+
+                    <p>
+                        Email:
+                        <a href="mailto:nata.gelitashvili@gmail.com">
+                            nata.gelitashvili@gmail.com
+                        </a>
+                    </p>
+
+                    <p>
+                        Phone:
+                        <a href="tel:+995577621727">
+                            +995 577 62 17 27
+                        </a>
+                    </p>
+
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="wrap" data-i="rights"></div>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
+
+</body>
+</html>

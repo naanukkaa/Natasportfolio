@@ -1,0 +1,15 @@
+body{background:var(--soft);font-size:16px}
+.top{background:var(--navy);color:#fff;padding:14px 4vw;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.top b{margin-right:auto}.top button,.btn2{background:none;border:1px solid rgba(255,255,255,.4);color:#fff;padding:8px 16px;cursor:pointer;font:inherit}
+.top button.on{background:#fff;color:var(--navy)}
+main.ad{width:min(1000px,94vw);margin:30px auto}
+.stats2{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:30px}
+.stats2 div{background:#fff;border:1px solid var(--line);padding:16px}.stats2 b{font-size:2rem;display:block}
+.row{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);padding:12px;margin-bottom:8px}
+.row span{flex:1}.row button,.f button{padding:6px 14px;cursor:pointer;font:inherit;border:1px solid var(--navy);background:#fff}
+.f{background:#fff;border:1px solid var(--line);padding:20px;display:grid;gap:14px}
+.f label{display:grid;gap:4px;font-weight:600}.f input,.f textarea,.f select{font:inherit;padding:10px;border:1px solid var(--line)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.f .pri{background:var(--navy);color:#fff}.msg{padding:10px;background:#fff;border-left:4px solid var(--so)}
+.login{max-width:380px;margin:18vh auto;background:#fff;padding:30px;border:1px solid var(--line)}
+@media(max-width:700px){.cols{grid-template-columns:1fr}}
