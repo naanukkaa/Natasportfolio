@@ -1,46 +1,42 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ka">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex">
 
-    <title>Admin</title>
+    <title>ადმინისტრირება | ნატალია გელიტაშვილი</title>
 
-    <!-- Stylesheets -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/motion.css">
 </head>
 
 <body>
 
-    <!-- Admin navigation -->
     <div class="top">
-        <b>Admin</b>
+        <b>ადმინისტრირება</b>
 
-        <button data-v="home">Overview</button>
-        <button data-v="news">News</button>
-        <button data-v="projects">Projects</button>
-        <button data-v="gallery">Gallery</button>
+        <button data-v="home">მთავარი</button>
+        <button data-v="news">სიახლეები</button>
+        <button data-v="projects">პროექტები</button>
+        <button data-v="gallery">გალერეა</button>
 
-        <button id="out">Log out</button>
+        <button id="out">გასვლა</button>
     </div>
 
-
-    <!-- Dashboard content -->
     <main class="ad" id="app" hidden></main>
 
-
-    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-
-    <!-- Application scripts -->
     <script src="js/config.js"></script>
     <script src="js/admin.js"></script>
-    <link rel="stylesheet" href="css/motion.css">
-    <script>document.documentElement.classList.add("js")</script>
+
+    <script>
+        document.documentElement.classList.add("js");
+    </script>
+
     <script src="js/motion.js" defer></script>
 
 </body>

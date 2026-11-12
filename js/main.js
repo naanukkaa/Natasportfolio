@@ -25,29 +25,23 @@ const T = {
 
         sub: "ნატალია გელიტაშვილი — ტექნოლოგიების მასწავლებელი, STEM და რობოტიკის კლუბების ხელმძღვანელი.",
 
-        b1: "ჩემი საქმიანობა",
+        b1: "კონტაქტი",
         b2: "პროექტები",
         photo: "აქ განთავსდება ნატალიას ფოტო (STEM მაისურით)",
 
-        s1: "წლიანი სწავლების გამოცდილება",
-        s2: "წლიანი გამოცდილება ტექნოლოგიების სწავლებაში",
-        s3: "წლიანი გამოცდილება მათემატიკის სწავლებაში",
+        s1: "წელი განათლების სფეროში",
+        s2: "წელი ტექნოლოგიების სწავლებაში",
+        s3: "წელი მათემატიკის სწავლებაში",
         s4: "კლუბი: STEM და რობოტიკა",
 
-        intro: "მასწავლებელი, რომელიც ტექნოლოგიებს პრაქტიკაში აქცევს",
+        intro: "მასწავლებელი, რომელიც ტექნოლოგიებს სწავლების ნაწილად აქცევს",
 
         g79: "VII-IX კლასები",
-        g46: "IV-V-VI კლასები",
+        g46: "IV-VI კლასები",
 
         latest: "ბოლო სიახლეები",
         empty: "სიახლეები ჯერ არ არის გამოქვეყნებული.",
         emptyProjects: "პროექტები ჯერ არ არის გამოქვეყნებული.",
-
-        pd: "STEM და რობოტიკის პროფესიული განვითარება",
-
-        pdt: "ნატალია მონაწილეობდა განათლების, მეცნიერებისა და ახალგაზრდობის სამინისტროს მიერ ორგანიზებულ STEM და რობოტიკის ბანაკებში. შერჩევა კონკურენტული იყო (რიცხვები მიახლოებითია).",
-
-        tr: "პროგრამის მონაწილე; არ არის სამინისტროს, კომაროვის ან საქართველოს ბანკის თანამშრომელი.",
 
         rights: "© ნატალია გელიტაშვილი",
 
@@ -81,29 +75,23 @@ const T = {
 
         sub: "Natalia Gelitashvili — Technology Teacher, STEM and Robotics Club Mentor.",
 
-        b1: "Explore My Work",
+        b1: "Contact Me",
         b2: "View Projects",
         photo: "Natalia's photo (in her STEM shirt) goes here",
 
         s1: "years of teaching experience",
         s2: "years teaching technology",
-        s3: "background teaching mathematics",
+        s3: "years teaching mathematics",
         s4: "clubs: STEM and Robotics",
 
-        intro: "A teacher who turns technology into hands-on practice",
+        intro: "A teacher who incorporates technology into teaching",
 
         g79: "Grades VII-IX",
-        g46: "Grades IV-V-VI",
+        g46: "Grades IV-VI",
 
         latest: "Latest news",
         empty: "No news published yet.",
         emptyProjects: "No projects published yet.",
-
-        pd: "STEM & Robotics professional development",
-
-        pdt: "Natalia took part in the STEM and Robotics Camps organized by the Ministry of Education, Science and Youth of Georgia. Selection was competitive (numbers are approximate).",
-
-        tr: "A participant in the program; not employed by the Ministry, Komarovi or Bank of Georgia.",
 
         rights: "© Natalia Gelitashvili",
 

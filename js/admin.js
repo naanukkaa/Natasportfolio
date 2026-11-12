@@ -1,573 +1,1064 @@
 
 'use strict';
 
-const sb = supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY);
+/* =====================================================
+   SUPABASE
+===================================================== */
+
+const sb = supabase.createClient(
+    CFG.SUPABASE_URL,
+    CFG.SUPABASE_ANON_KEY
+);
 
 const $ = selector => document.querySelector(selector);
 
-const esc = value => String(value ?? '').replace(/[&<>"]/g, char => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;'
-}[char]));
+let cur = null;
 
 const CFGS = {
     news: {
-        tx: ['title', 'description', 'content'],
-        label: 'News'
+        label: 'სიახლე',
+        fields: ['title', 'description', 'content']
     },
     projects: {
-        tx: ['title', 'description'],
-        label: 'Projects'
+        label: 'პროექტი',
+        fields: ['title', 'description']
     }
 };
 
-let cur = null;
+const LABELS = {
+    title: 'სათაური',
+    description: 'მოკლე აღწერა',
+    content: 'სრული ტექსტი'
+};
 
-/* ---------- Authentication ---------- */
 
-if ($('#lf')) {
-    $('#lf').onsubmit = async e => {
-        e.preventDefault();
+/* =====================================================
+   HELPERS
+===================================================== */
 
-        const form = new FormData(e.target);
+const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+}[char]));
 
-        const { error } = await sb.auth.signInWithPassword({
-            email: form.get('e'),
-            password: form.get('p')
-        });
+const note = message => {
+    const box = $('#msg');
 
-        if (error) {
-            $('#m').textContent = error.message;
-            return;
-        }
+    if (box) {
+        box.hidden = false;
+        box.textContent = message;
+        box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+        alert(message);
+    }
+};
 
-        const { data: isAdmin } = await sb.rpc('is_admin');
+const setLoading = (button, loading, original = 'შენახვა') => {
+    if (!button) return;
 
-        if (!isAdmin) {
-            await sb.auth.signOut();
-            $('#m').textContent = 'Login works, but this account is not in the admins table.';
-            return;
-        }
+    button.disabled = loading;
+    button.textContent = loading ? 'იტვირთება...' : original;
+};
 
-        location.href = 'dashboard.html';
-    };
-}
-
-/* ---------- Dashboard initialization ---------- */
-
-if ($('#app')) {
-    (async () => {
-        const { data: { session } } = await sb.auth.getSession();
-
-        const { data: isAdmin } = session
-            ? await sb.rpc('is_admin')
-            : { data: false };
-
-        if (!session || !isAdmin) {
-            await sb.auth.signOut();
-            location.href = 'login.html';
-            return;
-        }
-
-        $('#app').hidden = false;
-
-        $('#out').onclick = async () => {
-            await sb.auth.signOut();
-            location.href = 'login.html';
-        };
-
-        document.querySelectorAll('[data-v]').forEach(button => {
-            button.onclick = () => show(button.dataset.v);
-        });
-
-        show('home');
-    })();
-}
-
-/* ---------- Navigation ---------- */
-
-function show(view) {
-    document.querySelectorAll('[data-v]').forEach(button => {
-        button.classList.toggle('on', button.dataset.v === view);
-    });
-
-    if (view === 'home') home();
-    else if (view === 'gallery') gallery();
-    else listView(view);
-}
-
-/* ---------- Shared database helpers ---------- */
-
-async function cnt(table, filter) {
+async function dbCount(table, filter = null) {
     let query = sb.from(table).select('*', {
         count: 'exact',
         head: true
     });
 
-    if (filter) query = query.eq(...filter);
+    if (filter) {
+        query = query.eq(filter[0], filter[1]);
+    }
 
-    const { count } = await query;
+    const { count, error } = await query;
+
+    if (error) throw error;
+
     return count ?? 0;
 }
 
-async function up(file, directory) {
+async function uploadImage(file, directory) {
     if (!file.type.startsWith('image/')) {
-        throw new Error('Images only');
+        throw new Error('შესაძლებელია მხოლოდ ფოტოების ატვირთვა.');
     }
 
     const path = `${directory}/${crypto.randomUUID()}-${file.name.replace(/[^\w.-]/g, '_')}`;
 
-    const { error } = await sb.storage.from('media').upload(path, file);
+    const { error } = await sb.storage
+        .from('media')
+        .upload(path, file);
 
     if (error) throw error;
 
-    return sb.storage.from('media').getPublicUrl(path).data.publicUrl;
+    const { data } = sb.storage
+        .from('media')
+        .getPublicUrl(path);
+
+    return data.publicUrl;
 }
 
-const note = message => {
-    const box = $('#msg');
+function getValue(form, name) {
+    return form.elements.namedItem(name);
+}
 
-    box.hidden = false;
-    box.textContent = message;
-    box.scrollIntoView();
-};
+function getLocalDate(value) {
+    if (!value) return '';
 
-/* ---------- Dashboard home ---------- */
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) return '';
+
+    const offset = date.getTimezoneOffset() * 60000;
+
+    return new Date(date.getTime() - offset)
+        .toISOString()
+        .slice(0, 16);
+}
+
+
+/* =====================================================
+   LOGIN
+===================================================== */
+
+if ($('#lf')) {
+    $('#lf').addEventListener('submit', async e => {
+        e.preventDefault();
+
+        const form = new FormData(e.target);
+        const message = $('#m');
+        const button = e.target.querySelector('[type="submit"]');
+
+        setLoading(button, true, 'შესვლა');
+
+        try {
+            const { error } = await sb.auth.signInWithPassword({
+                email: form.get('e'),
+                password: form.get('p')
+            });
+
+            if (error) throw error;
+
+            const { data: isAdmin, error: adminError } =
+                await sb.rpc('is_admin');
+
+            if (adminError) throw adminError;
+
+            if (!isAdmin) {
+                await sb.auth.signOut();
+
+                throw new Error(
+                    'ეს ანგარიში ადმინისტრატორების სიაში არ არის.'
+                );
+            }
+
+            location.href = 'dashboard.html';
+
+        } catch (error) {
+            if (message) {
+                message.textContent = error.message;
+            }
+        } finally {
+            setLoading(button, false, 'შესვლა');
+        }
+    });
+}
+
+
+/* =====================================================
+   DASHBOARD INITIALIZATION
+===================================================== */
+
+if ($('#app')) {
+    (async () => {
+        try {
+            const {
+                data: { session },
+                error
+            } = await sb.auth.getSession();
+
+            if (error) throw error;
+
+            if (!session) {
+                location.href = 'login.html';
+                return;
+            }
+
+            const { data: isAdmin, error: adminError } =
+                await sb.rpc('is_admin');
+
+            if (adminError) throw adminError;
+
+            if (!isAdmin) {
+                await sb.auth.signOut();
+                location.href = 'login.html';
+                return;
+            }
+
+            $('#app').hidden = false;
+
+            if ($('#out')) {
+                $('#out').onclick = async () => {
+                    await sb.auth.signOut();
+                    location.href = 'login.html';
+                };
+            }
+
+            document.querySelectorAll('[data-v]').forEach(button => {
+                button.onclick = () => show(button.dataset.v);
+            });
+
+            show('home');
+
+        } catch (error) {
+            console.error(error);
+
+            $('#app').hidden = false;
+            $('#app').innerHTML = `
+                <div class="msg">
+                    ადმინისტრაციული პანელის ჩატვირთვა ვერ მოხერხდა:
+                    ${esc(error.message)}
+                </div>
+            `;
+        }
+    })();
+}
+
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
+function show(view) {
+    document.querySelectorAll('[data-v]').forEach(button => {
+        button.classList.toggle(
+            'on',
+            button.dataset.v === view
+        );
+    });
+
+    if (view === 'home') {
+        home();
+    } else if (view === 'gallery') {
+        gallery();
+    } else if (CFGS[view]) {
+        listView(view);
+    }
+}
+
+
+/* =====================================================
+   HOME
+===================================================== */
 
 async function home() {
-    const [news, projects, stem, robotics] = await Promise.all([
-        cnt('news'),
-        cnt('projects'),
-        cnt('news', ['category', 'stem']),
-        cnt('news', ['category', 'robotics'])
-    ]);
+    $('#app').innerHTML = '<p>იტვირთება...</p>';
 
-    $('#app').innerHTML = `
-        <div class="stats2">
-            <div><b>${news}</b>News posts</div>
-            <div><b>${projects}</b>Projects</div>
-            <div><b>${stem}</b>STEM posts</div>
-            <div><b>${robotics}</b>Robotics posts</div>
-        </div>
+    try {
+        const [news, projects, stem, robotics] = await Promise.all([
+            dbCount('news'),
+            dbCount('projects'),
+            dbCount('news', ['category', 'stem']),
+            dbCount('news', ['category', 'robotics'])
+        ]);
 
-        <button class="btn2" style="background:var(--navy)"
-            onclick="openForm('news')">+ New news post</button>
+        $('#app').innerHTML = `
+            <div class="stats2">
+                <div>
+                    <b>${news}</b>
+                    სულ სიახლე
+                </div>
 
-        <button class="btn2" style="background:var(--navy)"
-            onclick="openForm('projects')">+ New project</button>
-    `;
+                <div>
+                    <b>${projects}</b>
+                    სულ პროექტი
+                </div>
+
+                <div>
+                    <b>${stem}</b>
+                    STEM სიახლე
+                </div>
+
+                <div>
+                    <b>${robotics}</b>
+                    რობოტიკის სიახლე
+                </div>
+            </div>
+
+            <button class="btn2"
+                style="background:var(--navy)"
+                onclick="openForm('news')">
+                + ახალი სიახლე
+            </button>
+
+            <button class="btn2"
+                style="background:var(--navy)"
+                onclick="openForm('projects')">
+                + ახალი პროექტი
+            </button>
+        `;
+
+    } catch (error) {
+        $('#app').innerHTML = `
+            <p class="msg">
+                მონაცემების ჩატვირთვა ვერ მოხერხდა:
+                ${esc(error.message)}
+            </p>
+        `;
+    }
 }
 
-/* ---------- Content lists ---------- */
+
+/* =====================================================
+   NEWS & PROJECTS LIST
+===================================================== */
 
 async function listView(table) {
-    const { data } = await sb
-        .from(table)
-        .select('*')
-        .order('created_at', { ascending: false });
+    if (!CFGS[table]) return;
 
-    const rows = (data || []).map(row => `
-        <div class="row">
-            <span>
-                ${esc(row.title_ka || row.title_en)}
-                <small>(${row.category}${row.status ? ', ' + row.status : ''})</small>
-            </span>
+    $('#app').innerHTML = '<p>ჩანაწერები იტვირთება...</p>';
 
-            <button onclick='openForm("${table}","${row.id}")'>Edit</button>
-            <button onclick='del("${table}","${row.id}")'>Delete</button>
-        </div>
-    `).join('');
+    try {
+        const { data, error } = await sb
+            .from(table)
+            .select('*')
+            .order('created_at', { ascending: false });
 
-    $('#app').innerHTML = `
-        <p>
-            <button class="btn2" style="background:var(--navy)"
-                onclick="openForm('${table}')">+ New</button>
-        </p>
-        ${rows || '<p>Nothing yet.</p>'}
-    `;
+        if (error) throw error;
+
+        const rows = (data || []).map(row => `
+            <div class="row">
+                <span>
+                    ${esc(row.title_ka || row.title_en)}
+
+                    <small>
+                        ${esc(row.category || '')}
+                        ${row.status ? ' · ' + esc(row.status === 'published' ? 'გამოქვეყნებული' : 'მონახაზი') : ''}
+                    </small>
+                </span>
+
+                <button onclick="openForm('${table}','${esc(row.id)}')">
+                    რედაქტირება
+                </button>
+
+                <button onclick="del('${table}','${esc(row.id)}')">
+                    წაშლა
+                </button>
+            </div>
+        `).join('');
+
+        $('#app').innerHTML = `
+            <p>
+                <button class="btn2"
+                    style="background:var(--navy)"
+                    onclick="openForm('${table}')">
+                    + ახალი ${CFGS[table].label.toLowerCase()}
+                </button>
+            </p>
+
+            ${rows || '<p>ჩანაწერები ჯერ არ არის.</p>'}
+        `;
+
+    } catch (error) {
+        $('#app').innerHTML = `
+            <p class="msg">
+                ჩატვირთვა ვერ მოხერხდა:
+                ${esc(error.message)}
+            </p>
+        `;
+    }
 }
+
+
+/* =====================================================
+   DELETE NEWS / PROJECTS
+===================================================== */
 
 async function del(table, id) {
-    if (!confirm('Delete permanently?')) return;
+    if (!CFGS[table]) return;
 
-    await sb.from(table).delete().eq('id', id);
-    listView(table);
+    if (!confirm('ნამდვილად გსურთ ამ ჩანაწერის წაშლა?')) {
+        return;
+    }
+
+    try {
+        const { error } = await sb
+            .from(table)
+            .delete()
+            .eq('id', id);
+
+        if (error) throw error;
+
+        listView(table);
+
+    } catch (error) {
+        alert('წაშლა ვერ მოხერხდა: ' + error.message);
+    }
 }
 
-/* ---------- Content editor ---------- */
 
-async function openForm(table, id) {
+/* =====================================================
+   CONTENT EDITOR
+===================================================== */
+
+async function openForm(table, id = null) {
     const config = CFGS[table];
+
+    if (!config) return;
 
     let row = {};
 
-    if (id) {
-        const { data } = await sb
-            .from(table)
-            .select('*')
-            .eq('id', id)
-            .single();
+    $('#app').innerHTML = '<p>ფორმა იტვირთება...</p>';
 
-        row = data;
-    }
+    try {
+        if (id) {
+            const { data, error } = await sb
+                .from(table)
+                .select('*')
+                .eq('id', id)
+                .single();
 
-    cur = {
-        t: table,
-        id,
-        r: row,
-        edited: { ka: false, en: false }
-    };
+            if (error) throw error;
 
-    const labels = {
-        title: 'Title',
-        description: 'Short description',
-        content: 'Full text'
-    };
+            row = data;
+        }
 
-    const fields = config.tx.map(key => {
-        const isTitle = key === 'title';
-        const tag = isTitle ? 'input' : 'textarea';
-        const attributes = isTitle ? '' : 'rows="4"';
+        cur = {
+            table,
+            id,
+            row,
+            original: row.original_lang || null
+        };
 
-        return `
-            <div class="cols">
+        /* ---------- Language fields ---------- */
+
+        const fields = config.fields.map(key => {
+            const isTitle = key === 'title';
+
+            const makeField = language => {
+                const name = `${key}_${language}`;
+                const value = row[name] || '';
+
+                if (isTitle) {
+                    return `
+                        <input
+                            type="text"
+                            name="${name}"
+                            value="${esc(value)}"
+                            required="${key === 'title' ? 'false' : 'false'}"
+                        >
+                    `;
+                }
+
+                return `
+                    <textarea
+                        name="${name}"
+                        rows="4"
+                    >${esc(value)}</textarea>
+                `;
+            };
+
+            return `
+                <div class="cols">
+                    <label>
+                        ${LABELS[key]} — ქართული
+                        ${makeField('ka')}
+                    </label>
+
+                    <label>
+                        ${LABELS[key]} — ინგლისური
+                        ${makeField('en')}
+                    </label>
+                </div>
+            `;
+        }).join('');
+
+        /* ---------- Extra fields ---------- */
+
+        const extraFields = table === 'news'
+            ? `
                 <label>
-                    ${labels[key]} (ქართული)
-                    <${tag} ${attributes}
-                        name="${key}_ka">${esc(row[key + '_ka'] || '')}${isTitle ? '' : '</textarea>'}
+                    სტატუსი
+
+                    <select name="status">
+                        <option value="draft">მონახაზი</option>
+                        <option value="published">გამოქვეყნებული</option>
+                    </select>
                 </label>
 
                 <label>
-                    ${labels[key]} (English)
-                    <${tag} ${attributes}
-                        name="${key}_en">${esc(row[key + '_en'] || '')}${isTitle ? '' : '</textarea>'}
+                    გამოქვეყნების თარიღი
+
+                    <input
+                        type="datetime-local"
+                        name="published_at"
+                    >
                 </label>
-            </div>
+
+                <label>
+                    მდებარეობა (არასავალდებულო)
+
+                    <input
+                        name="location"
+                        value="${esc(row.location || '')}"
+                    >
+                </label>
+            `
+            : `
+                <label>
+                    წელი
+
+                    <input
+                        type="number"
+                        name="year"
+                        value="${esc(row.year ?? '')}"
+                    >
+                </label>
+
+                <label>
+                    <span>
+                        <input
+                            type="checkbox"
+                            name="featured"
+                            ${row.featured ? 'checked' : ''}
+                        >
+
+                        გამორჩეული პროექტი
+                    </span>
+                </label>
+            `;
+
+        /* ---------- Main form ---------- */
+
+        $('#app').innerHTML = `
+            <form class="f" id="ef">
+
+                <h2>
+                    ${id ? 'ჩანაწერის რედაქტირება' : 'ახალი ' + config.label}
+                </h2>
+
+                <div id="msg" class="msg" hidden role="alert"></div>
+
+                <p>
+                    შეავსეთ ქართული ველები. შემდეგ შეგიძლიათ
+                    ინგლისური ვერსია ავტომატურად თარგმნოთ
+                    ან დამოუკიდებლად დაწეროთ.
+                    გამოქვეყნებამდე აუცილებლად გადაამოწმეთ ტექსტები.
+                </p>
+
+                ${fields}
+
+                <div class="cols">
+                    <button type="button"
+                        onclick="tr('ka','en')">
+                        ქართულიდან ინგლისურად თარგმნა
+                    </button>
+
+                    <button type="button"
+                        onclick="tr('en','ka')">
+                        ინგლისურიდან ქართულად თარგმნა
+                    </button>
+                </div>
+
+                <label>
+                    კლუბი
+
+                    <select name="category">
+                        <option value="stem">STEM</option>
+                        <option value="robotics">რობოტიკა</option>
+                        <option value="general">ზოგადი</option>
+                    </select>
+                </label>
+
+                ${extraFields}
+
+                <label>
+                    მთავარი ფოტო
+
+                    <input
+                        type="file"
+                        name="main"
+                        accept="image/*"
+                    >
+                </label>
+
+                <label>
+                    დამატებითი ფოტოები
+
+                    <input
+                        type="file"
+                        name="more"
+                        accept="image/*"
+                        multiple
+                    >
+                </label>
+
+                <div class="cols">
+                    <button type="submit" class="pri">
+                        შენახვა
+                    </button>
+
+                    <button type="button"
+                        onclick="show('${table}')">
+                        გაუქმება
+                    </button>
+                </div>
+
+            </form>
         `;
-    }).join('');
 
-    const extraFields = table === 'news'
-        ? `
-            <label>
-                Status
-                <select name="status">
-                    <option value="draft">Draft</option>
-                    <option value="published">Published</option>
-                </select>
-            </label>
+        const form = $('#ef');
 
-            <label>
-                Date
-                <input type="datetime-local" name="published_at">
-            </label>
+        form.elements.category.value = row.category || 'general';
 
-            <label>
-                Location (optional)
-                <input name="location" value="${esc(row.location || '')}">
-            </label>
-        `
-        : `
-            <label>
-                Year
-                <input type="number" name="year" value="${esc(row.year ?? '')}">
-            </label>
+        if (form.elements.status) {
+            form.elements.status.value = row.status || 'draft';
+        }
 
-            <label>
-                <span>
-                    <input type="checkbox" name="featured"
-                        ${row.featured ? 'checked' : ''}>
-                    Featured
-                </span>
-            </label>
-        `;
+        if (form.elements.published_at) {
+            form.elements.published_at.value = getLocalDate(
+                row.published_at || new Date()
+            );
+        }
 
-    $('#app').innerHTML = `
-        <form class="f" id="ef">
-            <h2>${id ? 'Edit' : 'New'} ${config.label}</h2>
+        form.onsubmit = save;
 
-            <div id="msg" class="msg" hidden role="alert"></div>
-
-            <p>
-                Write in either language, then press the translate button.
-                You can correct both versions before saving.
+    } catch (error) {
+        $('#app').innerHTML = `
+            <p class="msg">
+                ფორმის გახსნა ვერ მოხერხდა:
+                ${esc(error.message)}
             </p>
-
-            ${fields}
-
-            <div class="cols">
-                <button type="button" onclick="tr('ka','en')">
-                    Georgian → fill English
-                </button>
-
-                <button type="button" onclick="tr('en','ka')">
-                    English → fill Georgian
-                </button>
-            </div>
-
-            <label>
-                Club
-                <select name="category">
-                    <option value="stem">STEM</option>
-                    <option value="robotics">Robotics</option>
-                    <option value="general">General</option>
-                </select>
-            </label>
-
-            ${extraFields}
-
-            <label>
-                Main image
-                <input type="file" name="main" accept="image/*">
-            </label>
-
-            <label>
-                More images
-                <input type="file" name="more" accept="image/*" multiple>
-            </label>
-
-            <button class="pri">Save</button>
-        </form>
-    `;
-
-    const form = $('#ef');
-
-    form.category.value = row.category || 'general';
-
-    if (form.status) {
-        form.status.value = row.status || 'draft';
+        `;
     }
-
-    if (form.published_at) {
-        form.published_at.value = (
-            row.published_at || new Date().toISOString()
-        ).slice(0, 16);
-    }
-
-    form.addEventListener('input', e => {
-        const match = (e.target.name || '').match(/_(ka|en)$/);
-
-        if (match) cur.edited[match[1]] = true;
-    });
-
-    form.onsubmit = save;
 }
 
-/* ---------- Translation ---------- */
+
+/* =====================================================
+   TRANSLATION
+===================================================== */
 
 async function tr(from, to) {
     const form = $('#ef');
 
-    const keys = CFGS[cur.t].tx.filter(key =>
-        form[key + '_' + from].value.trim()
-    );
+    if (!form || !cur) return;
+
+    const config = CFGS[cur.table];
+
+    const keys = config.fields.filter(key => {
+        return getValue(form, `${key}_${from}`).value.trim();
+    });
 
     if (!keys.length) {
-        return note('Write something in the source language first.');
+        note('ჯერ შეავსეთ ტექსტი, რომლის თარგმნაც გსურთ.');
+        return;
     }
 
-    const existing = keys.filter(key =>
-        form[key + '_' + to].value.trim()
-    );
+    const existing = keys.filter(key => {
+        return getValue(form, `${key}_${to}`).value.trim();
+    });
 
-    if (existing.length && !confirm(
-        `This will overwrite the existing ${to === 'ka' ? 'Georgian' : 'English'} text. Continue?`
-    )) return;
+    if (existing.length) {
+        const language = to === 'ka' ? 'ქართულ' : 'ინგლისურ';
 
-    const { data, error } = await sb.functions.invoke('translate', {
-        body: {
-            texts: keys.map(key => form[key + '_' + from].value),
-            source: from,
-            target: to
+        if (!confirm(
+            `არსებული ${language} ტექსტი შეიცვლება. გსურთ გაგრძელება?`
+        )) {
+            return;
         }
-    });
-
-    if (error || !data?.translations) {
-        return note(
-            'Translation failed. Your text is not lost: save it as a draft and try again later.'
-        );
     }
 
-    keys.forEach((key, index) => {
-        form[key + '_' + to].value = data.translations[index];
-    });
+    const buttons = form.querySelectorAll('button[type="button"]');
 
-    cur.orig = from;
-    cur.edited[to] = false;
+    buttons.forEach(button => button.disabled = true);
 
-    note(
-        `Translated. Please check the ${to === 'ka' ? 'Georgian' : 'English'} text before publishing.`
-    );
+    note('მიმდინარეობს თარგმნა...');
+
+    try {
+        const texts = keys.map(key => {
+            return getValue(form, `${key}_${from}`).value.trim();
+        });
+
+        const { data, error } = await sb.functions.invoke('translate', {
+            body: {
+                texts,
+                source: from,
+                target: to
+            }
+        });
+
+        if (error) throw error;
+
+        if (!data || !Array.isArray(data.translations)) {
+            throw new Error('თარგმნის სერვისმა არასწორი პასუხი დააბრუნა.');
+        }
+
+        if (data.translations.length !== keys.length) {
+            throw new Error('თარგმნილი ტექსტების რაოდენობა არ ემთხვევა.');
+        }
+
+        keys.forEach((key, index) => {
+            getValue(form, `${key}_${to}`).value =
+                data.translations[index];
+        });
+
+        cur.original = from;
+
+        note(
+            `თარგმნა დასრულდა! გადაამოწმეთ ${to === 'ka' ? 'ქართული' : 'ინგლისური'} ტექსტი.`
+        );
+
+    } catch (error) {
+        console.error('Translation error:', error);
+
+        const message =
+            error?.context?.error ||
+            error?.message ||
+            'უცნობი შეცდომა';
+
+        note('თარგმნა ვერ მოხერხდა: ' + message);
+    }finally {
+        buttons.forEach(button => button.disabled = false);
+    }
 }
 
-/* ---------- Save content ---------- */
+
+/* =====================================================
+   SAVE NEWS / PROJECTS
+===================================================== */
 
 async function save(e) {
     e.preventDefault();
 
     const form = e.target;
-    const table = cur.t;
+    const button = form.querySelector('[type="submit"]');
+
+    if (!cur) return;
+
+    const table = cur.table;
     const config = CFGS[table];
-    const data = {};
 
-    config.tx.forEach(key => {
-        data[key + '_ka'] = form[key + '_ka'].value.trim() || null;
-        data[key + '_en'] = form[key + '_en'].value.trim() || null;
-    });
-
-    data.original_lang = cur.orig || (data.title_ka ? 'ka' : 'en');
-    data.category = form.category.value;
-
-    if (table === 'news') {
-        data.status = form.status.value;
-        data.published_at = new Date(form.published_at.value).toISOString();
-        data.location = form.location.value || null;
-        data.ka_edited = cur.edited.ka;
-        data.en_edited = cur.edited.en;
-
-        if (data.status === 'published' && (!data.title_ka || !data.title_en)) {
-            return note(
-                'To publish, both Georgian and English titles are needed. Press a translate button, or save as draft.'
-            );
-        }
-    } else {
-        data.year = form.year.value ? +form.year.value : null;
-        data.featured = form.featured.checked;
-    }
-
-    data.updated_at = new Date().toISOString();
+    setLoading(button, true);
 
     try {
-        if (form.main.files[0]) {
-            data.main_image = await up(form.main.files[0], table);
+        const data = {};
+
+        /* ---------- Text fields ---------- */
+
+        config.fields.forEach(key => {
+            data[`${key}_ka`] =
+                getValue(form, `${key}_ka`).value.trim() || null;
+
+            data[`${key}_en`] =
+                getValue(form, `${key}_en`).value.trim() || null;
+        });
+
+        data.original_lang =
+            cur.original || (data.title_ka ? 'ka' : 'en');
+
+        data.category = form.elements.category.value;
+
+        /* ---------- News fields ---------- */
+
+        if (table === 'news') {
+            data.status = form.elements.status.value;
+
+            const date = form.elements.published_at.value;
+
+            data.published_at = date
+                ? new Date(date).toISOString()
+                : new Date().toISOString();
+
+            data.location =
+                form.elements.location.value.trim() || null;
+
+            data.ka_edited = false;
+            data.en_edited = false;
+
+            if (data.status === 'published') {
+                if (!data.title_ka || !data.title_en) {
+                    throw new Error(
+                        'გამოსაქვეყნებლად აუცილებელია სათაური ორივე ენაზე.'
+                    );
+                }
+            }
         }
 
-        const images = [];
+        /* ---------- Project fields ---------- */
 
-        for (const file of form.more.files) {
-            images.push(await up(file, table));
+        if (table === 'projects') {
+            const year = form.elements.year.value;
+
+            data.year = year ? Number(year) : null;
+            data.featured = form.elements.featured.checked;
         }
 
-        if (table === 'news' && images.length) {
-            data.gallery = [...(cur.r.gallery || []), ...images];
+        /* ---------- Image uploads ---------- */
+
+        const mainFile = form.elements.main.files[0];
+
+        if (mainFile) {
+            data.main_image = await uploadImage(mainFile, table);
         }
+
+        const uploadedImages = [];
+
+        for (const file of form.elements.more.files) {
+            const url = await uploadImage(file, table);
+            uploadedImages.push(url);
+        }
+
+        /* ---------- Insert / Update ---------- */
 
         let id = cur.id;
-        let result;
 
         if (id) {
-            result = await sb.from(table).update(data).eq('id', id);
+            const { error } = await sb
+                .from(table)
+                .update(data)
+                .eq('id', id);
+
+            if (error) throw error;
+
         } else {
-            result = await sb.from(table).insert(data).select().single();
-            id = result.data?.id;
+            const { data: inserted, error } = await sb
+                .from(table)
+                .insert(data)
+                .select()
+                .single();
+
+            if (error) throw error;
+
+            id = inserted.id;
         }
 
-        if (result.error) throw result.error;
+        /* ---------- News gallery ---------- */
 
-        if (table === 'projects' && images.length) {
-            const { error } = await sb.from('project_images').insert(
-                images.map((url, index) => ({
-                    project_id: id,
-                    image_url: url,
-                    sort_order: index
-                }))
-            );
+        if (table === 'news' && uploadedImages.length) {
+            const existingImages = cur.row.gallery || [];
+
+            const { error } = await sb
+                .from('news')
+                .update({
+                    gallery: [...existingImages, ...uploadedImages]
+                })
+                .eq('id', id);
 
             if (error) throw error;
         }
 
-        listView(table);
+        /* ---------- Project images ---------- */
+
+        if (table === 'projects' && uploadedImages.length) {
+            const { error } = await sb
+                .from('project_images')
+                .insert(
+                    uploadedImages.map((url, index) => ({
+                        project_id: id,
+                        image_url: url,
+                        sort_order: index
+                    }))
+                );
+
+            if (error) throw error;
+        }
+
+        alert('ჩანაწერი წარმატებით შეინახა!');
+
+        show(table);
 
     } catch (error) {
-        note('Could not save: ' + error.message);
+        console.error('Save error:', error);
+
+        note('შენახვა ვერ მოხერხდა: ' + error.message);
+
+    } finally {
+        if (button.isConnected) {
+            setLoading(button, false, 'შენახვა');
+        }
     }
 }
 
-/* ---------- Gallery ---------- */
+
+/* =====================================================
+   GALLERY
+===================================================== */
 
 async function gallery() {
-    const { data } = await sb
-        .from('gallery')
-        .select('*')
-        .order('created_at', { ascending: false });
+    $('#app').innerHTML = '<p>გალერეა იტვირთება...</p>';
 
-    const rows = (data || []).map(item => `
-        <div class="row">
-            <img src="${esc(item.image_url)}" alt=""
-                width="60" height="60" style="object-fit:cover">
+    try {
+        const { data, error } = await sb
+            .from('gallery')
+            .select('*')
+            .order('created_at', { ascending: false });
 
-            <span>
-                ${esc(item.caption_ka || item.caption_en || '')}
-                <small>(${item.category})</small>
-            </span>
+        if (error) throw error;
 
-            <button onclick='delG("${item.id}")'>Delete</button>
-        </div>
-    `).join('');
+        const rows = (data || []).map(item => `
+            <div class="row">
 
-    $('#app').innerHTML = `
-        <form class="f" id="gf">
-            <h2>Gallery</h2>
+                <img
+                    src="${esc(item.image_url)}"
+                    alt=""
+                    width="60"
+                    height="60"
+                    style="object-fit:cover"
+                >
 
-            <div id="msg" class="msg" hidden></div>
+                <span>
+                    ${esc(item.caption_ka || item.caption_en || 'აღწერის გარეშე')}
 
-            <label>
-                Photos
-                <input type="file" name="p" accept="image/*" multiple required>
-            </label>
+                    <small>
+                        ${esc(item.category || '')}
+                    </small>
+                </span>
 
-            <label>
-                Caption (any language, optional)
-                <input name="cap">
-            </label>
+                <button onclick="delG('${esc(item.id)}')">
+                    წაშლა
+                </button>
 
-            <label>
-                Club
-                <select name="c">
-                    <option value="stem">STEM</option>
-                    <option value="robotics">Robotics</option>
-                    <option value="general">General</option>
-                </select>
-            </label>
+            </div>
+        `).join('');
 
-            <button class="pri">Upload</button>
-        </form>
+        $('#app').innerHTML = `
+            <form class="f" id="gf">
 
-        <br>
+                <h2>გალერეა</h2>
 
-        ${rows}
-    `;
+                <div id="msg" class="msg" hidden role="alert"></div>
 
-    $('#gf').onsubmit = async e => {
-        e.preventDefault();
+                <label>
+                    ფოტოების არჩევა
 
-        const form = e.target;
+                    <input
+                        type="file"
+                        name="p"
+                        accept="image/*"
+                        multiple
+                        required
+                    >
+                </label>
 
-        try {
-            for (const file of form.p.files) {
-                const imageUrl = await up(file, 'gallery');
+                <label>
+                    ფოტოს აღწერა (არასავალდებულო)
 
-                const { error } = await sb.from('gallery').insert({
-                    image_url: imageUrl,
-                    caption_ka: form.cap.value || null,
-                    category: form.c.value
-                });
+                    <input
+                        name="cap"
+                        placeholder="მაგალითად: STEM კლუბის შეხვედრა"
+                    >
+                </label>
 
-                if (error) throw error;
+                <label>
+                    კლუბი
+
+                    <select name="c">
+                        <option value="stem">STEM</option>
+                        <option value="robotics">რობოტიკა</option>
+                        <option value="general">ზოგადი</option>
+                    </select>
+                </label>
+
+                <button type="submit" class="pri">
+                    ფოტოების ატვირთვა
+                </button>
+
+            </form>
+
+            <br>
+
+            <h3>ატვირთული ფოტოები</h3>
+
+            ${rows || '<p>გალერეა ჯერ ცარიელია.</p>'}
+        `;
+
+        $('#gf').onsubmit = async e => {
+            e.preventDefault();
+
+            const form = e.target;
+            const button = form.querySelector('[type="submit"]');
+
+            setLoading(button, true, 'ფოტოების ატვირთვა');
+
+            try {
+                const files = Array.from(form.elements.p.files);
+
+                if (!files.length) {
+                    throw new Error('აირჩიეთ მინიმუმ ერთი ფოტო.');
+                }
+
+                for (const file of files) {
+                    const imageUrl = await uploadImage(file, 'gallery');
+
+                    const { error } = await sb
+                        .from('gallery')
+                        .insert({
+                            image_url: imageUrl,
+                            caption_ka: form.elements.cap.value.trim() || null,
+                            category: form.elements.c.value
+                        });
+
+                    if (error) throw error;
+                }
+
+                alert('ფოტოები წარმატებით აიტვირთა!');
+
+                gallery();
+
+            } catch (error) {
+                note('ფოტოების ატვირთვა ვერ მოხერხდა: ' + error.message);
+
+            } finally {
+                if (button.isConnected) {
+                    setLoading(button, false, 'ფოტოების ატვირთვა');
+                }
             }
+        };
 
-            gallery();
-
-        } catch (error) {
-            note('Upload failed: ' + error.message);
-        }
-    };
+    } catch (error) {
+        $('#app').innerHTML = `
+            <p class="msg">
+                გალერეის ჩატვირთვა ვერ მოხერხდა:
+                ${esc(error.message)}
+            </p>
+        `;
+    }
 }
+
+
+/* =====================================================
+   DELETE GALLERY PHOTO
+===================================================== */
 
 async function delG(id) {
-    if (!confirm('Delete photo?')) return;
+    if (!confirm('ნამდვილად გსურთ ამ ფოტოს წაშლა?')) {
+        return;
+    }
 
-    await sb.from('gallery').delete().eq('id', id);
-    gallery();
+    try {
+        const { error } = await sb
+            .from('gallery')
+            .delete()
+            .eq('id', id);
+
+        if (error) throw error;
+
+        gallery();
+
+    } catch (error) {
+        alert('ფოტოს წაშლა ვერ მოხერხდა: ' + error.message);
+    }
 }
+
+
+/* =====================================================
+   GLOBAL FUNCTIONS
+===================================================== */
+
+window.show = show;
+window.openForm = openForm;
+window.del = del;
+window.delG = delG;
+window.tr = tr;
